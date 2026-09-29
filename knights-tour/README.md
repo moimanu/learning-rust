@@ -10,7 +10,9 @@ O problema do passeio do cavalo propõe encontrar uma sequência de movimentos p
 
 ## Lógica:
 
-Para cada passo, o cavalo deve verificar as 8 posições possíveis de se movimentar. Para cada posição possível, deve-se veficar se aquela posição ainda não foi visitada. Se não foi visitada, visita, e inicia-se um novo passo. Isso deve ocorrer enquanto não tiver realizado n² passos, onde n é o tamanho do tabuleiro.
+Para cada passo, o cavalo deve verificar as 8 posições possíveis de se movimentar. Para cada posição possível, deve-se verificar se aquela posição ainda não foi visitada. Se não foi visitada, visita-se e inicia-se um novo passo. Isso deve ocorrer enquanto não tiver realizado $n^2$ passos, onde $n$ é o tamanho do tabuleiro.
+
+> **Nota sobre indexação:** O pseudocódigo e o modelo teórico utilizam indexação base 1 ($1 \dots n$) para facilitar a convenção matemática. A implementação prática em Rust e os logs de execução utilizam indexação base 0 ($0 \dots n-1$).
 
 ## Pseudocódigo:
 
@@ -72,33 +74,33 @@ config:
   theme: dark
 ---
 graph TD
-    A["TENTA(1, (1,1))<br><i>Profundidade 1</i>"]
+    A["TENTA(2, 1, 1, q)<br><i>Passo k=2 (Nível 1)</i>"]
 
-    A --> B["TENTA(2, (2,3))<br><i>Profundidade 2</i>"]
-    A --> C["TENTA(2, (3,2))<br><i>Profundidade 2</i>"]
-    A --> D["...<br><i>(até 8 filhos)</i>"]
+    A --> B["TENTA(3, 3, 2, q1)<br><i>Passo k=3 (m=1)</i>"]
+    A --> C["TENTA(3, 2, 3, q1)<br><i>Passo k=3 (m=2)</i>"]
+    A --> D["...<br><i>(movimentos m=3..8)</i>"]
 
-    B --> E["TENTA(3, ...)<br><i>Profundidade 3</i>"]
-    B --> F["TENTA(3, ...)<br><i>Profundidade 3</i>"]
+    B --> E["TENTA(4, 5, 3, q1)<br><i>Passo k=4 (m=1)</i>"]
+    B --> F["TENTA(4, 4, 4, q1)<br><i>Passo k=4 (m=2)</i>"]
 
-    E --> G[...]
-    F --> H[...]
+    E --> G["..."]
+    F --> H["..."]
 
-    G --> I["[FALHA]<br><i>Backtracking</i>"]
-    G --> J["[FALHA]<br><i>Backtracking</i>"]
-    H --> K["[SUCESSO]<br><i>Profundidade k = n²</i>"]
+    G --> I["[FALHA]<br><i>Backtracking: t[xn,yn] = 0</i>"]
+    G --> J["[FALHA]<br><i>Backtracking: t[xn,yn] = 0</i>"]
+    H --> K["[SUCESSO]<br><i>Passo k = n² (q1 = true)</i>"]
 ```
 
 ## Análise assintótica:
 
-- **Complexidade de tempo:** $\mathcal{O}(8^{n^2})$ — Pior caso determinado pela exploração exaustiva de até 8 subproblemas por nível ao longo de $n^2$ níveis de profundidade da árvore de recursão.
-- **Complexidade de espaço:** $\mathcal{O}(n^2)$ — Espaço dominado pela matriz do tabuleiro $n \times n$ e pela pilha de chamadas recursivas no caminho mais profundo da busca.
+* **Complexidade de tempo:** $\mathcal{O}(8^{n^2})$ — Pior caso determinado pela exploração exaustiva de até 8 subproblemas por nível ao longo de $n^2$ níveis de profundidade da árvore de recursão.
+* **Complexidade de espaço:** $\mathcal{O}(n^2)$ — Espaço dominado pela matriz do tabuleiro $n \times n$ e pela pilha de chamadas recursivas no caminho mais profundo da busca.
 
 ## Logs:
 
-> Algoritmo implementado em [./src/main.rs](src/main.rs)
+> Algoritmo implementado em [./src/main.rs](./src/main.rs)
 
-- Iniciando na posição 0,0 (release):
+* Iniciando na posição 0,0 (release):
 
 ```bash
 [moises@archlinux knights-tour]$ cargo run --release
@@ -118,7 +120,8 @@ Tempo total: 78.394763ms
 Chamadas recursivas: 8250732
 Backtrackings (passos desfeitos): 8250669
 ```
-- Iniciando na posição 3,3 (release):
+
+* Iniciando na posição 3,3 (release):
 
 ```bash
 [moises@archlinux knights-tour]$ cargo run --release
@@ -139,4 +142,9 @@ Chamadas recursivas: 5602853861
 Backtrackings (passos desfeitos): 5602853798
 ```
 
-Nos dois cenários tivemos sucesso em encontrar uma solução. No entanto, como podemos observar nos logs, tivemos um gasto computacional muito maior no segundo cenário. No primeiro cenário, a posição inicial do cavalo é a (1,1), que tem 2 possibilidades de movimento, já no segundo cenário, a posição inicial do cavalo é a (3,3), que tem 8 possibilidades de movimento. Por conta da ordem de movimentos definida por h e v, iniciar em (1,1) faz o algoritmo percorrer as bordas e os cantos primeiro, diminuindo em muito a busca e o backtracking.
+Nos dois cenários tivemos sucesso em encontrar uma solução. No entanto, como podemos observar nos logs, o custo computacional foi muito maior no segundo cenário.
+
+Essa diferença ocorre porque o algoritmo não utiliza uma heurística de ordenação (como a Heurística de Warnsdorff), dependendo exclusivamente da ordem fixa de movimentos definida pelos vetores h e v:
+
+* **Partindo de (0,0):** A sequência fixa de movimentos guiou o algoritmo para cobrir os cantos e as bordas do tabuleiro logo nos primeiros passos. Isso evitou a criação de "casas isoladas" e reduziu o backtracking.
+* **Partindo de (3,3):** A mesma sequência de movimentos fez o cavalo transitar primariamente pelo centro do tabuleiro nos passos iniciais. Com isso, os cantos e bordas ficaram isolados para o final do passeio, o que forçou a busca exaustiva em bilhões de caminhos sem saída até conseguir preencher todo o tabuleiro.
