@@ -6,4 +6,5 @@ Esse repositório servirá para a realização de atividades práticas de RUST e
 
 Conceitos estudados:
 
-- [Caminho de cavalo (Knight's Tour)](knights-tour/README.md)
+- [Knight's Tour](knights-tour/README.md)
+- [Divide and Conquer](divide-and-conquer/README.md)
