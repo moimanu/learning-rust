@@ -71,6 +71,17 @@ flowchart TD
     node2_4 -.- node_leaves
 ```
 
+### Rastreamento da Execução (Exemplo simples):
+
+**Vetor:** `a = [7, 2, 9, 4]`
+
+| Passo | Chamada | Subvetor | Operacao / Comparacao | Retorno | Estado da Pilha |
+| --- | --- | --- | --- | --- | -- |
+| **1** | `MAXMIN4(1, 4)` | `[7, 2, 9, 4]` | Divide no meio (indice 2) | — | `[ (1, 4) ]` |
+| **2** | `MAXMIN4(1, 2)` | `[7, 2]` | Compara 7 e 2 | max1 = 7, min1 = 2 | `[ (1, 4), (1, 2) ]` |
+| **3** | `MAXMIN4(3, 4)` | `[9, 4]` | Compara 9 e 4 | max2 = 9, min2 = 4 | `[ (1, 4), (3, 4) ]` |
+| **4** | Combina | - | max(7, 9) e min(2, 4) | **max = 9, min = 2** | `[ ]` |
+
 ## Análise de recorrência e assintótica:
 
 A função $T(n)$ representa a quantidade de operações executadas para um vetor de tamanho $n$:
@@ -113,4 +124,3 @@ O maior valor é: 2147472269
 O menor valor é: -2147479181
 Chamadas recursivas: 1048575
 ```
-
