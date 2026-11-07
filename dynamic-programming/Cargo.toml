@@ -1,0 +1,7 @@
+[package]
+name = "dynamic-programming"
+version = "0.1.0"
+edition = "2021"
+description = "Resolução de exercícios de Programação Dinâmica em Rust"
+
+[dependencies]

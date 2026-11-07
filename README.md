@@ -8,3 +8,4 @@ Conceitos estudados:
 
 - [Knight's Tour](knights-tour/README.md)
 - [Divide and Conquer](divide-and-conquer/README.md)
+- [Dynamic Programming](dynamic-programming/README.md)
